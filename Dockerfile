@@ -9,7 +9,7 @@ ENV LC_ALL en_US.UTF-8
 RUN apt-get update && apt-get --no-install-recommends -y install \
     locales \
     sudo mc wget \
-    netbase iproute2 iputils-ping isc-dhcp-client \
+    netbase iproute2 iputils-ping isc-dhcp-client iptables \
     python3 python3-distutils python3-apt pip \
     pciutils kmod strace \
     && apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
@@ -29,5 +29,6 @@ RUN chmod +x ./docker-runner.sh
 EXPOSE 4507
 EXPOSE 4500
 EXPOSE 4501
+EXPOSE 4510
 
 CMD ./docker-runner.sh
