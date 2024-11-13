@@ -28,6 +28,25 @@ def apply_ctl_iface(cfg: dict) -> None:
     apply_ctl_port(cfg, "zqm_stl", 4501)
     apply_ctl_port(cfg, "emu", 4510) # все порты за DNAT потому что в trex-сервере нельзя настроить EMU порт
 
+def wait_ifaces(cfg: dict) -> None:
+    timeout = 10
+    iface = cfg["ctl"].get("iface")
+    if iface:
+        if False == util.wait_iface(iface, timeout):
+            raise Exception("Can't wait iface " + iface)
+    for iface in cfg["src"]:
+        iface = iface.get("iface")
+        if None == iface:
+            continue
+        if False == util.wait_iface(iface, timeout):
+            raise Exception("Can't wait iface " + iface)
+    for iface in cfg["dst"]:
+        iface = iface.get("iface")
+        if None == iface:
+            continue
+        if False == util.wait_iface(iface, timeout):
+            raise Exception("Can't wait iface " + iface)
+
 def generate_starter(cfg: dict) -> None:
     with open(sys.argv[1], "w", encoding="utf-8") as file:
         print("#!/bin/bash\n", file=file)
@@ -46,6 +65,7 @@ if __name__ == "__main__":
     cfg = config.parse_from_env()
     print("CONFIG:")
     pprint.pprint(cfg)
+    wait_ifaces(cfg)
     apply_ctl_iface(cfg["ctl"])
     trex_config.generate_yml(cfg)
     generate_starter(cfg)
